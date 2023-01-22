@@ -1,78 +1,68 @@
 #include "sort.h"
+
 /**
-*swap - the positions of two elements into an array
-*@array: array
-*@item1: array element
-*@item2: array element
-*/
-void swap(int *array, ssize_t item1, ssize_t item2)
-{
-	int tmp;
-
-	tmp = array[item1];
-	array[item1] = array[item2];
-	array[item2] = tmp;
-}
-/**
- *lomuto_partition - lomuto partition sorting scheme implementation
- *@array: array
- *@first: first array element
- *@last: last array element
- *@size: size array
- *Return: return the position of the last element sorted
- */
-int lomuto_partition(int *array, ssize_t first, ssize_t last, size_t size)
-{
-	int pivot = array[last];
-	ssize_t current = first, finder;
-
-	for (finder = first; finder < last; finder++)
-	{
-		if (array[finder] < pivot)
-		{
-			if (array[current] != array[finder])
-			{
-				swap(array, current, finder);
-				print_array(array, size);
-			}
-			current++;
-		}
-	}
-	if (array[current] != array[last])
-	{
-		swap(array, current, last);
-		print_array(array, size);
-	}
-	return (current);
-}
-/**
- *qs - qucksort algorithm implementation
- *@array: array
- *@first: first array element
- *@last: last array element
- *@size: array size
- */
-void qs(int *array, ssize_t first, ssize_t last, int size)
-{
-	ssize_t position = 0;
-
-
-	if (first < last)
-	{
-		position = lomuto_partition(array, first, last, size);
-
-		qs(array, first, position - 1, size);
-		qs(array, position + 1, last, size);
-	}
-}
-/**
- *quick_sort - prepare the terrain to quicksort algorithm
- *@array: array
- *@size: array size
+ * quick_sort - sorts array with qs algo
+ * @size: size of array
+ * @array: array
+ * Return: void
  */
 void quick_sort(int *array, size_t size)
 {
-	if (!array || size < 2)
+	if (size < 2 || !array)
 		return;
-	qs(array, 0, size - 1, size);
+
+	quick_sort_recursive(array, 0, size - 1, size);
+}
+
+/**
+ * quick_sort_recursive - sorts array with qs algo
+ * @arr: array
+ * @low: start index of partition
+ * @hi: end index of partition
+ * @s: size of arr
+ * Return: void
+ */
+void quick_sort_recursive(int *arr, int low, int hi, size_t s)
+{
+	if (low < hi)
+	{
+		int p = partition(arr, low, hi, s);
+
+		quick_sort_recursive(arr, low, p - 1, s);
+		quick_sort_recursive(arr, p + 1, hi, s);
+	}
+}
+
+/**
+ * partition - sorts array with qs algo
+ * @arr: array
+ * @low: start index of partition
+ * @hi: end index of partition
+ * @s: size of arr
+ * Return: void
+ */
+int partition(int *arr, int low, int hi, size_t s)
+{
+	int pivot = arr[hi], tmp;
+	int i = low, j;
+
+	for (j = low; j < hi; j++)
+	{
+		if (arr[j] <= pivot)
+		{
+			tmp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = tmp;
+			i++;
+			if (i - 1 != j)
+				print_array(arr, s);
+		}
+	}
+
+	tmp = arr[i];
+	arr[i] = arr[hi];
+	arr[hi] = tmp;
+	if (i != hi)
+		print_array(arr, s);
+	return (i);
 }

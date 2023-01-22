@@ -1,60 +1,38 @@
 #include "sort.h"
-#include <stdio.h>
-/**
- *_calloc - this is a calloc function
- *@nmemb: number of elemets
- *@size: bit size of each element
- *Return: pointer to memory assignement
- */
-void *_calloc(unsigned int nmemb, unsigned int size)
-{
-	unsigned int i = 0;
-	char *p;
 
-	if (nmemb == 0 || size == 0)
-		return ('\0');
-	p = malloc(nmemb * size);
-	if (p == '\0')
-		return ('\0');
-	for (i = 0; i < (nmemb * size); i++)
-		p[i] = '\0';
-	return (p);
-}
 /**
- * counting_sort - this is a counting sort method implementation
- * @array: array to sort
- * @size: array size
+ * counting_sort - sorts array with counting algo
+ * @size: size of array
+ * @arr: array of numbers
+ * Return: void
  */
-void counting_sort(int *array, size_t size)
+void counting_sort(int *arr, size_t size)
 {
-	int index, maximun = 0, *counter = '\0', *tmp = '\0';
-	size_t i;
+	int *count;
+	int i, k = 0, total = 0;
 
-	if (array == '\0' || size < 2)
+	if (!arr || size < 2)
 		return;
-	/* find maximun number */
-	for (i = 0; i < size; i++)
-		if (array[i] > maximun)
-			maximun = array[i];
-	counter = _calloc(maximun + 1, sizeof(int));
-	tmp = _calloc(size + 1, sizeof(int));
-	/* count the array elements */
-	for (i = 0; i < size; i++)
-		counter[array[i]]++;
-	/* get the accumulative values */
-	for (index = 1; index <= maximun; index++)
-		counter[index] += counter[index - 1];
-	print_array(counter, maximun + 1);
-	/* get the new array sorted */
-	for (i = 0; i < size; ++i)
+	for (i = 0; i < (int)size; i++)
+		if (arr[i] > k)
+			k = arr[i];
+	count = malloc(sizeof(int) * (k + 1));
+	if (!count)
+		return;
+	for (i = 0; i < (int)size; i++)
+		count[arr[i]] += 1;
+	for (i = 0; i < k + 1; i++)
 	{
-		tmp[counter[array[i]] - 1] = array[i];
-		counter[array[i]]--;
+		if (count[i])
+			total++;
+		count[i] = total;
 	}
-	/* replace old array to new array sorted */
-	for (i = 0; i < size; i++)
-		array[i] = tmp[i];
-	free(tmp);
-	free(counter);
-
+	print_array(count, k + 1);
+	total = 0;
+	for (i = 0; i < k + 1; i++)
+	{
+		if (count[i] != total)
+			arr[total++] = i;
+	}
+	free(count);
 }

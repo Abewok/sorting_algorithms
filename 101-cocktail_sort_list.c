@@ -1,67 +1,93 @@
 #include "sort.h"
-#include <stdio.h>
-/**
- *swap_node - swap a node for his previous one
- *@node: node
- *@list: node list
- *Return: return a pointer to a node which was enter it
- */
-listint_t *swap_node(listint_t *node, listint_t **list)
-{
-	listint_t *back = node->prev, *current = node;
-	/*NULL, 19, 48, 9, 71, 13, NULL*/
 
-	back->next = current->next;
-	if (current->next)
-		current->next->prev = back;
-	current->next = back;
-	current->prev = back->prev;
-	back->prev = current;
-	if (current->prev)
-		current->prev->next = current;
-	else
-		*list = current;
-	return (current);
-}
 /**
- *cocktail_sort_list - this is a cocktail sort implementation
- *working on a double linked lists
- *@list: list
+ * cocktail_sort_list - sorts dll
+ * @list: head node of dll
+ * Return: void
  */
 void cocktail_sort_list(listint_t **list)
 {
-	listint_t *node;
-	int swap_done = 1;
+	int swapped = 1;
+	listint_t *curr;
 
-	if (list == '\0' || (*list) == '\0' || (*list)->next == '\0')
+	if (!list)
 		return;
-	node = *list;
-	while (swap_done == 1)
+	if (*list && !(*list)->next)
+		return;
+	curr = *list;
+	while (swapped)
 	{
-		swap_done = 0;
-		while (node->next)
+		swapped = 0;
+		while (curr->next)
 		{
-			if (node->n > node->next->n)
+			if (curr->n > curr->next->n)
 			{
-				node = swap_node(node->next, list);
-				swap_done = 1;
+				swap_nodes(curr, list, 1);
 				print_list(*list);
-			}
-			node = node->next;
-		}
-		if (swap_done == 0)
-			break;
-		swap_done = 0;
-		while (node->prev)
-		{
-			if (node->n < node->prev->n)
-			{
-				node = swap_node(node, list);
-				swap_done = 1;
-				print_list(*list);
+				swapped = 1;
 			}
 			else
-				node = node->prev;
+				curr = curr->next;
 		}
+		if (!swapped)
+			break;
+		swapped = 0;
+		while (curr->prev)
+		{
+			if (curr->n < curr->prev->n)
+			{
+				swap_nodes(curr, list, 0);
+				print_list(*list);
+				swapped = 1;
+			}
+			else
+				curr = curr->prev;
+		}
+	}
+}
+/**
+ * swap_nodes - swaps two nodes
+ * @curr: current node
+ * @list: head point to first node
+ * @fordward: flag
+ * Return: void
+ */
+void swap_nodes(listint_t *curr, listint_t **list, int fordward)
+{
+	listint_t *next;
+	listint_t *prev;
+	listint_t *swap;
+
+	if (fordward)
+	{
+		prev = curr->prev;
+		swap = curr->next;
+		next = swap->next;
+		curr->next = next;
+		curr->prev = swap;
+		swap->next = curr;
+		swap->prev = prev;
+		if (prev)
+			prev->next = swap;
+		if (next)
+			next->prev = curr;
+		if (!prev)
+			*list = swap;
+	}
+	else
+	{
+		swap = curr->prev;
+		next = curr->next;
+		prev = swap->prev;
+		curr->next = swap;
+		curr->prev = prev;
+		swap->next = next;
+		swap->prev = curr;
+		if (prev)
+			prev->next = curr;
+		if (next)
+			next->prev = swap;
+		if (!prev)
+			*list = curr;
 	}
 }
